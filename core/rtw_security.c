@@ -1458,9 +1458,8 @@ _func_enter_;
     for (j = 0; j < 8; j++)
     	pframe[payload_index+j] = mic[j];	//message[payload_index+j] = mic[j];
 
-	payload_index = hdrlen + 8;
-	for (i=0; i< num_blocks; i++)
-    {
+    payload_index = hdrlen + 8;
+	for (i=0; i< num_blocks; i++) {
         construct_ctr_preload(
                                 ctr_preload,
                                 a4_exists,
@@ -1831,15 +1830,15 @@ _func_enter_;
 
     }
 
-    for (j = 0 ; j < 8; j++) mic[j] = aes_out[j];
+    for (j = 0 ; j < 8; j++)
+        mic[j] = aes_out[j];
 
     /* Insert MIC into payload */
     for (j = 0; j < 8; j++)
     	message[payload_index+j] = mic[j];
 
-	payload_index = hdrlen + 8;
-	for (i=0; i< num_blocks; i++)
-    {
+    payload_index = hdrlen + 8;
+    for (i=0; i< num_blocks; i++) {
         construct_ctr_preload(
                                 ctr_preload,
                                 a4_exists,

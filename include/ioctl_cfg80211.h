@@ -71,6 +71,7 @@ struct rtw_wdev_priv
 	
 };
 
+#define wdev_to_ndev(w) ((w)->netdev)
 #define wdev_to_priv(w) ((struct rtw_wdev_priv *)(wdev_priv(w)))
 
 #define wiphy_to_adapter(x) (_adapter *)(((struct rtw_wdev_priv*)wiphy_priv(x))->padapter)
@@ -107,6 +108,10 @@ bool rtw_cfg80211_pwr_mgmt(_adapter *adapter);
 #define rtw_cfg80211_rx_mgmt(adapter, freq, sig_dbm, buf, len, gfp) cfg80211_rx_mgmt((adapter)->pnetdev, freq, buf, len, gfp)
 #elif (LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0))
 #define rtw_cfg80211_rx_mgmt(adapter, freq, sig_dbm, buf, len, gfp) cfg80211_rx_mgmt((adapter)->pnetdev, freq, sig_dbm, buf, len, gfp)
+#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3,12,0))
+#define rtw_cfg80211_rx_mgmt(adapter, freq, sig_dbm, buf, len, gfp) cfg80211_rx_mgmt((adapter)->rtw_wdev, freq, sig_dbm, buf, len, gfp)
+#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3,18,0))
+#define rtw_cfg80211_rx_mgmt(adapter, freq, sig_dbm, buf, len, gfp) cfg80211_rx_mgmt((adapter)->rtw_wdev, freq, sig_dbm, buf, len, 0, gfp)
 #else
 #define rtw_cfg80211_rx_mgmt(adapter, freq, sig_dbm, buf, len, gfp) cfg80211_rx_mgmt((adapter)->rtw_wdev, freq, sig_dbm, buf, len, gfp)
 #endif

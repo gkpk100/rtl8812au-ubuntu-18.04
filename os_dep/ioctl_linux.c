@@ -10034,7 +10034,7 @@ static int rtw_mp_read_reg(struct net_device *dev,
 					  if ( data[i] != '\0' )
 					 	 tmp[j] = data[i];
 					 	
-					  	 j++;
+					 j++;
 				}
 				pch = tmp;		
 				DBG_871X("pch=%s",pch);
