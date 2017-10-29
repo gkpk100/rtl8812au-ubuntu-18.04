@@ -1,17 +1,13 @@
 ## Realtek 802.11ac (rtl8812au)
 
-This is a fork of the Realtek 802.11ac (rtl8812au) v4.2.2 (7502.20130507)
-driver altered to build on Linux kernel version >= 3.10.
+This is a fork of git://github.com/gnab/rtl8812au.git, which was based
+on the Realtek 802.11ac (rtl8812au) v4.2.2 (7502.20130507) driver.
+This version is fixed to build on Linux kernel up to version 4.14.
 
 ### Purpose
 
-My D-Link DWA-171 wireless dual-band USB adapter needs the Realtek 8812au
+The D-Link DWA-171 wireless dual-band USB adapter needs the Realtek 8812au
 driver to work under Linux.
-
-The current rtl8812au version (per nov. 20th 2013) doesn't compile on Linux
-kernels >= 3.10 due to a change in the proc entry API, specifically the
-deprecation of the `create_proc_entry()` and `create_proc_read_entry()`
-functions in favor of the new `proc_create()` function.
 
 ### Building
 
