@@ -2678,9 +2678,17 @@ void rtw_build_tunneled_probe_rsp_ies(_adapter * padapter, struct xmit_frame * p
 }
 #endif //CONFIG_WFD
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void _TPK_timer_hdl(struct timer_list *t)
+#else
 void _TPK_timer_hdl(void *FunctionContext)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct sta_info *ptdls_sta = from_timer(ptdls_sta, t, sta.TPK_timer);
+#else
 	struct sta_info *ptdls_sta = (struct sta_info *)FunctionContext;
+#endif
 
 	ptdls_sta->TPK_count++;
 	//TPK_timer set 1000 as default
@@ -2697,7 +2705,11 @@ void init_TPK_timer(_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&psta->TPK_timer, _TPK_timer_hdl, 0);
+#else
 	_init_timer(&psta->TPK_timer, padapter->pnetdev, _TPK_timer_hdl, psta);
+#endif
 }
 
 // TDLS_DONE_CH_SEN: channel sensing and report candidate channel

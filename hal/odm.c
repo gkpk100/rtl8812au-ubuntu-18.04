@@ -5694,16 +5694,11 @@ ODM_InitAllTimers(
 	)
 {	
 #if(defined(CONFIG_SW_ANTENNA_DIVERSITY))
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer, odm_SwAntDivChkAntSwitchCallback, 0);
+#else
 	ODM_InitializeTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer,
 		(RT_TIMER_CALL_BACK)odm_SwAntDivChkAntSwitchCallback, NULL, "SwAntennaSwitchTimer");
-#endif
-
-#if (!(DM_ODM_SUPPORT_TYPE == ODM_CE))
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-#if (RTL8188E_SUPPORT == 1)
-	ODM_InitializeTimer(pDM_Odm,&pDM_Odm->FastAntTrainingTimer,
-		(RT_TIMER_CALL_BACK)odm_FastAntTrainingCallback, NULL, "FastAntTrainingTimer");
-#endif
 #endif
 #endif
 

@@ -29,7 +29,11 @@
 
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void rtw_signal_stat_timer_hdl(struct timer_list *t);
+#else
 void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
+#endif
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 
@@ -118,12 +122,20 @@ _func_enter_;
 	res = rtw_hal_init_recv_priv(padapter);
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl, 0);
+#else
 	rtw_init_timer(&precvpriv->signal_stat_timer, padapter, RTW_TIMER_HDL_NAME(signal_stat));
+#endif
 
 	precvpriv->signal_stat_sampling_interval = 1000; //ms
 	//precvpriv->signal_stat_converging_constant = 5000; //ms
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_set_timer(&precvpriv->signal_stat_timer, precvpriv->signal_stat_sampling_interval);
+#else
 	rtw_set_signal_stat_timer(precvpriv);
+#endif
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 exit:
@@ -3669,9 +3681,18 @@ _func_exit_;
 }
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
-	_adapter *adapter = (_adapter *)FunctionContext;
-	struct recv_priv *recvpriv = &adapter->recvpriv;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void rtw_signal_stat_timer_hdl(struct timer_list *t)
+#else
+void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS)
+#endif
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *padapter = from_timer(padapter, t, recvpriv.signal_stat_timer);
+#else
+	_adapter *padapter = (_adapter *)FunctionContext;
+#endif
+	struct recv_priv *recvpriv = &padapter->recvpriv;
 	
 	u32 tmp_s, tmp_q;
 	u8 avg_signal_strength = 0;
@@ -3680,10 +3701,10 @@ void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
 	u32 num_signal_qual = 0;
 	u8 _alpha = 3; // this value is based on converging_constant = 5000 and sampling_interval = 1000
 
-	if(adapter->recvpriv.is_signal_dbg) {
+	if(padapter->recvpriv.is_signal_dbg) {
 		//update the user specific value, signal_strength_dbg, to signal_strength, rssi
-		adapter->recvpriv.signal_strength= adapter->recvpriv.signal_strength_dbg;
-		adapter->recvpriv.rssi=(s8)translate_percentage_to_dbm((u8)adapter->recvpriv.signal_strength_dbg);
+		padapter->recvpriv.signal_strength = padapter->recvpriv.signal_strength_dbg;
+		padapter->recvpriv.rssi=(s8)translate_percentage_to_dbm((u8)padapter->recvpriv.signal_strength_dbg);
 	} else {
 
 		if(recvpriv->signal_strength_data.update_req == 0) {// update_req is clear, means we got rx
@@ -3701,7 +3722,7 @@ void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
 		}
 
 		//update value of signal_strength, rssi, signal_qual
-		if(check_fwstate(&adapter->mlmepriv, _FW_UNDER_SURVEY) == _FALSE) {
+		if(check_fwstate(&padapter->mlmepriv, _FW_UNDER_SURVEY) == _FALSE) {
 			tmp_s = (avg_signal_strength+(_alpha-1)*recvpriv->signal_strength);
 			if(tmp_s %_alpha)
 				tmp_s = tmp_s/_alpha + 1;
@@ -3735,8 +3756,11 @@ void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
 			#endif
 		}
 	}
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_set_timer(&recvpriv->signal_stat_timer, recvpriv->signal_stat_sampling_interval);
+#else
 	rtw_set_signal_stat_timer(recvpriv);
-	
+#endif
 }
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 

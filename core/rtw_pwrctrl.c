@@ -335,10 +335,17 @@ exit:
 	return;
 }
 
-void pwr_state_check_handler(RTW_TIMER_HDL_ARGS);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void pwr_state_check_handler(struct timer_list *t)
+#else
 void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *padapter = from_timer(padapter, t, pwrctrlpriv.pwr_state_check_timer);
+#else
 	_adapter *padapter = (_adapter *)FunctionContext;
+#endif
 	rtw_ps_cmd(padapter);
 }
 
@@ -1392,7 +1399,11 @@ _func_enter_;
 #endif // CONFIG_LPS_RPWM_TIMER
 #endif // CONFIG_LPS_LCLK
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&pwrctrlpriv->pwr_state_check_timer, pwr_state_check_handler, 0);
+#else
 	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
+#endif
 
 	#ifdef CONFIG_RESUME_IN_WORKQUEUE
 	_init_workitem(&pwrctrlpriv->resume_work, resume_workitem_callback, NULL);
