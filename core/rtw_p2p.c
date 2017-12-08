@@ -3557,6 +3557,9 @@ static void ro_ch_timer_process (void *FunctionContext)
 #endif
 	struct rtw_wdev_priv *pwdev_priv = wdev_to_priv(adapter->rtw_wdev);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	//printk("%s \n", __FUNCTION__);
 	
 #ifdef	CONFIG_CONCURRENT_MODE
@@ -4242,6 +4245,7 @@ void rtw_init_cfg80211_wifidirect_info( _adapter*	padapter)
 	
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pcfg80211_wdinfo->remain_on_ch_timer, ro_ch_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer( &pcfg80211_wdinfo->remain_on_ch_timer, padapter->pnetdev, ro_ch_timer_process, padapter );
 #endif
@@ -4577,6 +4581,9 @@ static void reset_ch_sitesurvey_timer_process(void *FunctionContext)
 #endif
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
@@ -4599,6 +4606,9 @@ static void reset_ch_sitesurvey_timer_process2 (void *FunctionContext)
 #endif
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
@@ -4621,6 +4631,9 @@ static void restore_p2p_state_timer_process (void *FunctionContext)
 #endif
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return; 
 	
@@ -4643,6 +4656,9 @@ static void pre_tx_scan_timer_process (void *FunctionContext)
 	struct mlme_priv					*pmlmepriv = &adapter->mlmepriv;
 	u8								_status = 0;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 	
@@ -4693,6 +4709,9 @@ static void find_phase_timer_process (void *FunctionContext)
 #endif
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
@@ -4763,12 +4782,18 @@ void rtw_init_wifidirect_timers(_adapter* padapter)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pwdinfo->find_phase_timer, find_phase_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pwdinfo->restore_p2p_state_timer, restore_p2p_state_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pwdinfo->pre_tx_scan_timer, pre_tx_scan_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pwdinfo->reset_ch_sitesurvey, reset_ch_sitesurvey_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pwdinfo->reset_ch_sitesurvey2, reset_ch_sitesurvey_timer_process2, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #ifdef CONFIG_CONCURRENT_MODE
 	timer_setup(&pwdinfo->ap_p2p_switch_timer, ap_p2p_switch_timer_process, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #endif
 #else
 	_init_timer( &pwdinfo->find_phase_timer, padapter->pnetdev, find_phase_timer_process, padapter );

@@ -85,6 +85,9 @@ void rtw_join_timeout_handler (void *FunctionContext)
 #else
 	_adapter *adapter = (_adapter *)FunctionContext;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	_rtw_join_timeout_handler(adapter);
 }
 
@@ -99,6 +102,9 @@ void _rtw_scan_timeout_handler (void *FunctionContext)
 	_adapter *adapter = from_timer(adapter, t, mlmepriv.scan_to_timer);
 #else
 	_adapter *adapter = (_adapter *)FunctionContext;
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
 #endif
 	rtw_scan_timeout_handler(adapter);
 }
@@ -116,6 +122,9 @@ void _dynamic_check_timer_handlder(void *FunctionContext)
 	_adapter *adapter = (_adapter *)FunctionContext;
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 #if (MP_DRIVER == 1)	
 if (adapter->registrypriv.mp_mode == 1)
 	return;
@@ -137,6 +146,9 @@ void _rtw_set_scan_deny_timer_hdl(void *FunctionContext)
 #else
 	_adapter *adapter = (_adapter *)FunctionContext;	 
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	rtw_set_scan_deny_timer_hdl(adapter);
 }
 #endif
@@ -148,10 +160,14 @@ void rtw_init_mlme_timer(_adapter *padapter)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pmlmepriv->assoc_timer, rtw_join_timeout_handler, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pmlmepriv->scan_to_timer, _rtw_scan_timeout_handler, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pmlmepriv->dynamic_chk_timer, _dynamic_check_timer_handlder, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 	timer_setup(&pmlmepriv->set_scan_deny_timer, _rtw_set_scan_deny_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #endif
 #else
 	_init_timer(&(pmlmepriv->assoc_timer), padapter->pnetdev, rtw_join_timeout_handler, padapter);
@@ -345,6 +361,9 @@ void _survey_timer_hdl(void *FunctionContext)
 	_adapter *padapter = (_adapter *)FunctionContext;
 #endif
 	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	survey_timer_hdl(padapter);
 }
 
@@ -358,6 +377,9 @@ void _link_timer_hdl (void *FunctionContext)
 	_adapter *padapter = from_timer(padapter, t, mlmeextpriv.link_timer);
 #else
 	_adapter *padapter = (_adapter *)FunctionContext;
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
 #endif
 	link_timer_hdl(padapter);
 }
@@ -373,6 +395,9 @@ void _addba_timer_hdl(void *FunctionContext)
 #else
 	struct sta_info *psta =	struct sta_info *psta = (struct sta_info *)FunctionContext;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	addba_timer_hdl(psta);
 }
 
@@ -381,6 +406,7 @@ void init_addba_retry_timer(_adapter *padapter, struct sta_info *psta)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&psta->addba_retry_timer, _addba_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer(&psta->addba_retry_timer, padapter->pnetdev, _addba_timer_hdl, psta);
 #endif
@@ -406,7 +432,9 @@ void init_mlme_ext_timer(_adapter *padapter)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pmlmeext->survey_timer, _survey_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 	timer_setup(&pmlmeext->link_timer, _link_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer(&pmlmeext->survey_timer, padapter->pnetdev, _survey_timer_hdl, padapter);
 	_init_timer(&pmlmeext->link_timer, padapter->pnetdev, _link_timer_hdl, padapter);

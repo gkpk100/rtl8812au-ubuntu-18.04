@@ -346,6 +346,9 @@ void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
 #else
 	_adapter *padapter = (_adapter *)FunctionContext;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	rtw_ps_cmd(padapter);
 }
 
@@ -1401,6 +1404,7 @@ _func_enter_;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pwrctrlpriv->pwr_state_check_timer, pwr_state_check_handler, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
 #endif

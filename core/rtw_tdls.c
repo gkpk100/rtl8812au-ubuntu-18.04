@@ -2690,6 +2690,9 @@ void _TPK_timer_hdl(void *FunctionContext)
 	struct sta_info *ptdls_sta = (struct sta_info *)FunctionContext;
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	ptdls_sta->TPK_count++;
 	//TPK_timer set 1000 as default
 	//retry timer should set at least 301 sec.
@@ -2697,7 +2700,6 @@ void _TPK_timer_hdl(void *FunctionContext)
 		ptdls_sta->TPK_count=0;
 		issue_tdls_setup_req(ptdls_sta->padapter, ptdls_sta->hwaddr);
 	}
-	
 	_set_timer(&ptdls_sta->TPK_timer, ptdls_sta->TDLS_PeerKey_Lifetime/TPK_RESEND_COUNT);
 }
 
@@ -2707,6 +2709,7 @@ void init_TPK_timer(_adapter *padapter, struct sta_info *psta)
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&psta->TPK_timer, _TPK_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer(&psta->TPK_timer, padapter->pnetdev, _TPK_timer_hdl, psta);
 #endif

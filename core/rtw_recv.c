@@ -124,10 +124,14 @@ _func_enter_;
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	rtw_init_timer(&precvpriv->signal_stat_timer, padapter, RTW_TIMER_HDL_NAME(signal_stat));
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	precvpriv->signal_stat_sampling_interval = 1000; //ms
 	//precvpriv->signal_stat_converging_constant = 5000; //ms
 

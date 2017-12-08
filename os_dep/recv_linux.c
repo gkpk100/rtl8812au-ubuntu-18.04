@@ -675,6 +675,9 @@ void _rtw_reordering_ctrl_timeout_handler(void *FunctionContext)
 #else
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
 }
 
@@ -684,6 +687,7 @@ void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&preorder_ctrl->reordering_ctrl_timer, _rtw_reordering_ctrl_timeout_handler, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
 #endif

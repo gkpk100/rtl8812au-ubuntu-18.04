@@ -2157,6 +2157,9 @@ void BlinkTimerCallback(void *data)
 #endif
 	_adapter		*padapter = pLed->padapter;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	pr_info("***** rtl8812au: Entered timer handler %s\n", __func__);
+#endif
 	//DBG_871X("%s\n", __FUNCTION__);
 
 	if( (padapter->bSurpriseRemoved == _TRUE) || ( padapter->bDriverStopped == _TRUE))	
@@ -4692,6 +4695,7 @@ InitLed(
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
 	timer_setup(&pLed->BlinkTimer, BlinkTimerCallback, 0);
+	pr_info("***** rtl8812au: Setup timer %s\n", __func__);
 #else
 	_init_timer(&pLed->BlinkTimer, padapter->pnetdev, BlinkTimerCallback, pLed);
 #endif
